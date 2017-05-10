@@ -2,21 +2,31 @@
   "name": "user-api",
   "version": "0.0.1",
   "private": true,
-  "description": "New Swagger API Project",
+  "description": "User API",
   "keywords": [],
-  "author": "",
+  "author": "Zoltan Burgermeiszter <zoltan@burgermeiszter.com>",
   "license": "",
   "main": "app.js",
   "dependencies": {
+    "crypto": "0.0.3",
+    "deep-equal": "^1.0.1",
     "express": "^4.12.3",
+    "moment": "^2.18.1",
     "swagger-express-mw": "^0.1.0"
   },
   "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-register": "^6.24.1",
     "should": "^7.1.0",
     "supertest": "^1.0.0"
   },
   "scripts": {
-    "start": "node app.js",
-    "test": "swagger project test"
+    "start": "NODE_APP_INSTANCE=prod node app.js",
+    "start:dev": "NODE_APP_INSTANCE=dev babel-node app.js",
+    "clean": "rm -rf build && mkdir build",
+    "build": "npm run clean && babel -d build/ src/ -s",
+    "test": "NODE_APP_INSTANCE=dev mocha --compilers js:babel-register test --recursive",
+    "test:watch": "NODE_APP_INSTANCE=dev mocha -w --compilers js:babel-register test --recursive"
   }
 }

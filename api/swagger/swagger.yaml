@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   version: "0.0.1"
-  title: Hello World App
+  title: UserAPI
 # during dev, should point to your local machine
 host: localhost:10010
 # basePath prefixes all resource paths 
@@ -18,43 +18,150 @@ consumes:
 produces:
   - application/json
 paths:
-  /hello:
-    # binds a127 app logic to a route
-    x-swagger-router-controller: hello_world
+  /users:
+    x-swagger-router-controller: Users
     get:
-      description: Returns 'Hello' to the caller
-      # used as the method name of the controller
-      operationId: hello
-      parameters:
-        - name: name
-          in: query
-          description: The name of the person to whom to say hello
-          required: false
-          type: string
+      operationId: getAll
+      description: Get all users
       responses:
         "200":
-          description: Success
+          description: Return list of users
           schema:
-            # a pointer to a definition
-            $ref: "#/definitions/HelloWorldResponse"
-        # responses may fall through to errors
+            $ref: "#/definitions/UsersListResponse"
         default:
-          description: Error
+          description: User list cannot be loaded
           schema:
-            $ref: "#/definitions/ErrorResponse"
+            $ref: "#/definitions/StatusResponse"
+    post:
+      operationId: create
+      description: Register new user
+      parameters:
+        - name: User
+          description: User properties
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/UserInput"
+      responses:
+        "200":
+          description: User saved
+          schema:
+            $ref: "#/definitions/StatusResponse"
+        default:
+          description: User cannot be saved
+          schema:
+            $ref: "#/definitions/StatusResponse"
+  /users/{id}:
+    x-swagger-router-controller: Users
+    get:
+      operationId: find
+      description: Get an user
+      parameters:
+        - name: id
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Return User
+          schema:
+            $ref: "#/definitions/User"
+        default:
+          description: User not found
+          schema:
+            $ref: "#/definitions/StatusResponse"
+    put:
+      operationId: update
+      description: Update User
+      parameters:
+        - name: id
+          type: string
+          in: path
+          required: true
+        - name: user
+          description: User properties
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/UserInput"
+      responses:
+        "200":
+          description: User updated
+          schema:
+            $ref: "#/definitions/StatusResponse"
+        default:
+          description: User cannot be updated
+          schema:
+            $ref: "#/definitions/StatusResponse"
+    delete:
+      operationId: delete
+      description: Delete user
+      parameters:
+        - name: id
+          description: User ID
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: User deleted
+          schema:
+            $ref: "#/definitions/StatusResponse"
+        default:
+          description: User cannot be deleted
+          schema:
+            $ref: "#/definitions/StatusResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
 definitions:
-  HelloWorldResponse:
+  User:
+    type: object
+    properties:
+      id:
+        type: string
+      email:
+        type: string
+        format: email
+      forename:
+        type: string
+      surname:
+        type: string
+      created:
+        type: string
+        format: date-time
     required:
-      - message
+      - id
+      - email
+      - created
+      
+  UserInput:
+    type: object
+    properties:
+      email:
+        type: string
+        format: email
+      forename:
+        type: string
+      surname:
+        type: string
+    required:
+      - email
+    
+  UsersListResponse:
+    properties:
+      users:
+        type: array
+        items:
+          $ref: "#/definitions/User"
+    required:
+      - users
+  
+  StatusResponse:
+    type: object
     properties:
       message:
         type: string
-  ErrorResponse:
+        description: Status message
     required:
       - message
-    properties:
-      message:
-        type: string
