@@ -1,0 +1,11 @@
+version: '2'
+services:
+  swagger-api:
+    build: .
+    ports:
+     - "10010:10010"
+    restart: on-failure
+  swagger-ui:
+    image: "swaggerapi/swagger-ui"
+    ports:
+      - "80:8080"
